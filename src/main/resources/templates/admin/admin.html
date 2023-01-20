@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -29,10 +29,10 @@
     <div class="row">
         <div class="col-2 nav flex-column nav-pills my-2" aria-orientation="vertical">
             <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link active" aria-current="page" href="../admin">Admin</a>
+                <a class="nav-link" aria-current="page" href="../admin">Admin</a>
             </li>
             <li class="nav-item" sec:authorize="hasRole('USER')">
-                <a class="nav-link" href="../user">User</a>
+                <a class="nav-link active" href="../user">User</a>
             </li>
         </div>
         <div class="col" sec:authorize="hasRole('ADMIN')">
@@ -282,10 +282,10 @@
                                             <label for="savePassword" class="form-label d-block text-center fw-bold">Password:</label>
                                             <input type="password" class="form-control" required th:filed="*{password}"
                                                    name="password" id="savePassword"><br>
-                                            <label for="savePassword" class="form-label d-block text-center fw-bold">First
+                                            <label for="saveName" class="form-label d-block text-center fw-bold">First
                                                 name:</label>
                                             <input type="text" class="form-control" th:filed="*{name}"
-                                                   name="firstName" id="saveFirstName"><br>
+                                                   name="name" id="saveName"><br>
                                             <label for="saveLastName" class="form-label d-block text-center fw-bold">Last
                                                 name:</label>
                                             <input type="text" class="form-control" th:filed="*{lastName}"
