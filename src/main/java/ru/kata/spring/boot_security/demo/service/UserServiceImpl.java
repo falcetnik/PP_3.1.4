@@ -1,8 +1,10 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import com.mysql.cj.xdevapi.Collection;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,10 +15,8 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import ru.kata.spring.boot_security.demo.model.User;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,33 +26,38 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleService roleService, @Lazy BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(
+            UserRepository userRepository,
+            RoleService roleService,
+            @Lazy BCryptPasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByLogin(String username) {
         return userRepository.findByLogin(username);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User user = findByLogin(login);
-        if (user != null) {
-            user.setUserDetailsName(user.getUsername());
-        }
         if (user == null) {
             throw new UsernameNotFoundException(
                     "No user with uch name : " + login
             );
+        } else {
+            user.setUserDetailsName(user.getName());
+            return user;
         }
-        Hibernate.initialize(user.getRoles());
-        return user;
     }
 
     @Override
+    @Transactional
     public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         roleService.saveRole(user.getRoles());
@@ -61,20 +66,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUser(User user) {
         if (userRepository.existsById(user.getId())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            roleService.saveRole(user.getRoles());
             saveUser(user);
         }
     }
 
     @Override
+    @Transactional
     public void deleteUserById(long id) {
         userRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getAllUsersList() {
         return userRepository.findAll();
     }

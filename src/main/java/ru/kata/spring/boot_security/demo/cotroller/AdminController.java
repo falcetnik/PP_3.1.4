@@ -33,8 +33,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/delete")
-    public String deleteUser(@RequestParam("id") String id) {
-        userService.deleteUserById(Integer.parseInt(id));
+    public String deleteUser(@RequestParam("id") Long id) {
+        userService.deleteUserById(id);
         return "redirect:/admin";
     }
 
