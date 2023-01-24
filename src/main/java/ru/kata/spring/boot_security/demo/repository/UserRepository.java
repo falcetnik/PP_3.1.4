@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    @Query("select u from User u join fetch u.roles where u.login = ?1")
     User findByLogin(String username);
-
 }
